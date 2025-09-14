@@ -155,13 +155,11 @@
             <h1>Open karo — Aik chhota sa fun card tumhare liye!</h1>
             <p class="lead">Apna naam likho.
             </p>
+            <div class="row">
+                <input id="nameInput" type="text" placeholder="Apna naam likho (ex: Qasim)" required />
+                <button type="button" id="revealBtn">Dekhao</button>
+            </div>
 
-            <form id="nameForm">
-                <div class="row">
-                    <input id="nameInput" type="text" placeholder="Apna naam likho (ex: Qasim)" required />
-                    <button type="button" id="revealBtn">Dekhao</button>
-                </div>
-            </form>
 
             <div class="result" id="resultBox" role="status" aria-live="polite">
                 <div class="emoji" id="emojiBox">✨</div>
@@ -199,7 +197,22 @@
                 { emoji: '🌙', text: (n) => `${n}, jo insaan doosron ke liye roshni banta hai, Allah uske raste asaan kar deta hai.` },
                 { emoji: '🎭', text: (n) => `${n}, muskaan tumhari taqat hai — aaj kisi udaas dil ko khush karna.` },
                 { emoji: '🎵', text: (n) => `${n}, ek acha gaana suno aur dil ko halka karo.` },
-                { emoji: '🥰', text: (n) => `${n}, agar kisi se naraz ho to usko aj maaf kar do, Allah ki raza k liay.` }
+                { emoji: '🥰', text: (n) => `${n}, agar kisi se naraz ho to usko aj maaf kar do, Allah ki raza k liay.` },
+                { emoji: '🌈', text: (n) => `${n}, jo cheez tumhe pareshaan karti hai, Allah usme bhi tumhare liye asaaniyan paida kare.` },
+                { emoji: '🤗', text: (n) => `${n}, ek acha lafz kisi ka din badal sakta hai — aaj try karo.` },
+                { emoji: '🕊️', text: (n) => `${n}, jahan bhi jao, tumhari waja se aman aur khushi phailay.` },
+                { emoji: '📖', text: (n) => `${n}, aaj Quran ki aik chhoti si ayat ki tilawat karo, or matlab samjho.` },
+                { emoji: '☕', text: (n) => `${n}, aaj apne liye thoda waqt nikal kar sukoon ke sath chai ya coffee enjoy karo.` },
+                { emoji: '🕌', text: (n) => `${n}, jo dil Allah se jura rehta hai, usko kabhi tanhaayi mehsoos nahi hoti.` },
+                { emoji: '✨', text: (n) => `${n}, tumhari duaon ka asar tum soch bhi nahi sakte — dua karna mat chhoro.` },
+                { emoji: '🧑‍🤝‍🧑', text: (n) => `${n}, aaj ek dost ko bas itna keh kar call karo: *Tum yaad aaye.` },
+                { emoji: '🌹', text: (n) => `${n}, chhoti si muskaan kisi ki badi takleef ko halka kar sakti hai.` },
+                { emoji: '🔑', text: (n) => `${n}, sabr woh chaabi hai jo har band darwaza kholta hai.` },
+                { emoji: '🌍', text: (n) => `${n}, duniya ke liye tum ek shakhs ho, lekin kisi ek shakhs ke liye tum puri duniya ho sakte ho.` },
+                { emoji: '🕯️', text: (n) => `${n}, zindagi ki sabse bari roshni dusron ki madad karne mein hai.` },
+                { emoji: '🍃', text: (n) => `${n}, har din ek nayi shuruaat hai — kal ki fikr chhoro, aaj jeeyo.` },
+                { emoji: '🤲', text: (n) => `${n}, Allah tumhe dono jahan ki behtareen khushiyan naseeb kare.` },
+                { emoji: '🌟', text: (n) => `${n}, Allah tumhari mehnat ko kamiyabi mein badal de.` }
             ];
 
 
@@ -288,8 +301,7 @@
                     doReveal();
                 }
             });
-            <!-- input.addEventListener('keydown', e => { if (e.key === 'Enter') doReveal(); }); -->
-
+            
             // prefill from hash: #name=Qasim
             (function prefill() {
                 const h = location.hash.replace('#', '');
@@ -349,6 +361,5 @@
         })();
     </script>
 </body>
-
 
 </html>
