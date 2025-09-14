@@ -1,0 +1,353 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Fun Surprise Card — Open karo aur muskurao 😄</title>
+    <style>
+        :root {
+            --bg: #0b1220;
+            --card: #071428;
+            --accent: #ffb86b;
+            --muted: #9fb3c8;
+        }
+
+        * {
+            box-sizing: border-box
+        }
+
+        html,
+        body {
+            height: 100%;
+            margin: 0;
+            font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial;
+            background: linear-gradient(180deg, #051023 0%, #071a2a 60%);
+            color: #eef6fb
+        }
+
+        .wrap {
+            min-height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px
+        }
+
+        .card {
+            width: 100%;
+            max-width: 720px;
+            border-radius: 16px;
+            padding: 22px;
+            background:
+                linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(0, 0, 0, 0.18));
+            box-shadow: 0 14px 30px rgba(2, 6, 23, 0.6);
+            position: relative;
+            overflow: hidden
+        }
+
+        h1 {
+            margin: 0 0 8px;
+            font-size: 20px
+        }
+
+        p.lead {
+            margin: 0 0 16px;
+            color: var(--muted)
+        }
+
+        .row {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap
+        }
+
+        input[type="text"] {
+            flex: 1;
+            padding: 12px 14px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            background: rgba(255, 255, 255, 0.02);
+            color: inherit;
+            font-size: 15px;
+            outline: none
+        }
+
+        button {
+            padding: 12px 14px;
+            border-radius: 10px;
+            border: 0;
+            background: linear-gradient(90deg, var(--accent), #ff7b7b);
+            color: #041022;
+            font-weight: 700;
+            cursor: pointer
+        }
+
+        .result {
+            margin-top: 18px;
+            padding: 16px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.02);
+            display: none;
+            align-items: center;
+            gap: 14px
+        }
+
+        .emoji {
+            font-size: 48px
+        }
+
+        .msg {
+            font-size: 18px;
+            margin: 0 0 6px
+        }
+
+        .small {
+            font-size: 13px;
+            color: var(--muted)
+        }
+
+        .actions {
+            margin-top: 12px;
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap
+        }
+
+        canvas.confetti {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none
+        }
+
+        .bg-soft {
+            position: absolute;
+            right: -80px;
+            top: -80px;
+            width: 320px;
+            height: 320px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, rgba(255, 200, 120, 0.06), transparent 30%),
+                radial-gradient(circle at 70% 70%, rgba(120, 200, 255, 0.04), transparent 30%);
+            filter: blur(20px);
+            opacity: 0.9
+        }
+
+        @media(max-width:520px) {
+            .row {
+                flex-direction: column
+            }
+
+            h1 {
+                font-size: 18px
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="wrap">
+        <div class="card" id="card">
+            <div class="bg-soft" aria-hidden="true"></div>
+            <h1>Open karo — Aik chhota sa fun card tumhare liye!</h1>
+            <p class="lead">Apna naam likho.
+            </p>
+
+            <form id="nameForm">
+                <div class="row">
+                    <input id="nameInput" type="text" placeholder="Apna naam likho (ex: Qasim)" required />
+                    <button type="button" id="revealBtn">Dekhao</button>
+                </div>
+            </form>
+
+            <div class="result" id="resultBox" role="status" aria-live="polite">
+                <div class="emoji" id="emojiBox">✨</div>
+                <div>
+                    <p class="msg" id="message">Yahan surprise message aayega.</p>
+                    <p class="small" id="sub">Screenshot lo ya share karo — bas maze karo 😊</p>
+                    <div class="actions">
+                        <button id="downloadBtn">Badge Download karo</button>
+                        <button id="copyBtn">Copy Text</button>
+                    </div>
+                </div>
+            </div>
+
+            <p class="small" style="margin-top:12px">Tip: Agar url mein `#name=TumharaNaam` ho to page automatically
+                prefills karega.</p>
+            <canvas class="confetti" id="confetti"></canvas>
+        </div>
+    </div>
+
+    <script>
+        (function () {
+            // harmless, positive, friendly messages only
+            const templates = [
+                { emoji: '🌸', text: (n) => `${n}, Allah tumhari zindagi ko khushiyo aur barkaton se bhar de.` },
+                { emoji: '✨', text: (n) => `${n}, har mushkil tumhari aasani mein badal jaye — umeed kabhi na khona.` },
+                { emoji: '😊', text: (n) => `${n}, tumhara chehra hamesha muskurata rahe.` },
+                { emoji: '🌹', text: (n) => `${n}, Allah tumhe wahi de jo tumhare liye sabse behtareen hai.` },
+                { emoji: '🍲', text: (n) => `${n}, aaj kisi gareeb ko khana khilao — barkat tumhari taraf ayegi.` },
+                { emoji: '🤲', text: (n) => `${n}, aaj apne maa baap ke liye dua karna mat bhoolna.` },
+                { emoji: '📞', text: (n) => `${n}, aaj apne kisi purane dost ko yaad karo aur rabta karo.` },
+                { emoji: '🙂', text: (n) => `${n}, aaj kisi ki purani galti ko maaf kro, Q ki maaf karna nabiyon ki sunnat hai` },
+                { emoji: '💫', text: (n) => `${n}, zindagi ki asli khubsurti doosron ke chehre par muskaan lani mein hai.` },
+                { emoji: '☀️', text: (n) => `${n}, har subah ek nayi umeed lekar aati hai — yakeen rakho.` },
+                { emoji: '🍀', text: (n) => `${n}, chhoti chhoti khushiyan sabse badi daulat hoti hain.` },
+                { emoji: '🌙', text: (n) => `${n}, jo insaan doosron ke liye roshni banta hai, Allah uske raste asaan kar deta hai.` },
+                { emoji: '🎭', text: (n) => `${n}, muskaan tumhari taqat hai — aaj kisi udaas dil ko khush karna.` },
+                { emoji: '🎵', text: (n) => `${n}, ek acha gaana suno aur dil ko halka karo.` },
+                { emoji: '🥰', text: (n) => `${n}, agar kisi se naraz ho to usko aj maaf kar do, Allah ki raza k liay.` }
+            ];
+
+
+            const cvs = document.getElementById('confetti');
+            const ctx = cvs.getContext && cvs.getContext('2d');
+            let W, H, pieces = [];
+
+            function resize() { if (!ctx) return; W = cvs.width = cvs.offsetWidth; H = cvs.height = cvs.offsetHeight; }
+            window.addEventListener('resize', resize); resize();
+
+            function rand(min, max) { return Math.random() * (max - min) + min; }
+            function spawnConfetti() {
+                if (!ctx) return;
+                for (let i = 0; i < 80; i++) {
+                    pieces.push({
+                        x: rand(0, W), y: rand(-H, 0), r: rand(6, 12), vx: rand(-2, 2), vy: rand(1, 6),
+                        color: ['#ffd166', '#06d6a0', '#118ab2', '#ef476f', '#8338ec'][Math.floor(rand(0, 5))],
+                        tilt: rand(-0.3, 0.3)
+                    });
+                }
+            }
+            function draw() {
+                if (!ctx) return;
+                ctx.clearRect(0, 0, W, H);
+                for (let p of pieces) {
+                    p.x += p.vx; p.y += p.vy; p.vy += 0.05; p.tilt += p.vx * 0.02;
+                    ctx.save();
+                    ctx.translate(p.x, p.y);
+                    ctx.rotate(p.tilt);
+                    ctx.fillStyle = p.color;
+                    ctx.fillRect(-p.r / 2, -p.r / 2, p.r, p.r * 0.6);
+                    ctx.restore();
+                }
+                pieces = pieces.filter(p => p.y < H + 50);
+                requestAnimationFrame(draw);
+            }
+            draw();
+
+            // UI logic
+            const btn = document.getElementById('revealBtn');
+            const input = document.getElementById('nameInput');
+            const res = document.getElementById('resultBox');
+            const msg = document.getElementById('message');
+            const emojiBox = document.getElementById('emojiBox');
+            const downloadBtn = document.getElementById('downloadBtn');
+            const copyBtn = document.getElementById('copyBtn');
+
+            function pick(name) {
+                // simple deterministic pick based on name, so same name gets same card (nice touch)
+                const s = (name || 'Friend');
+                let h = 0;
+                for (let i = 0; i < s.length; i++) { h = ((h << 5) - h) + s.charCodeAt(i); h |= 0; }
+                const idx = Math.abs(h) % templates.length;
+                return templates[idx];
+            }
+
+            function doReveal() {
+                const raw = input.value.trim();
+                if (!raw) {
+                    alert("Naam likhna zaroori hai! 🚫");
+                    input.focus();
+                    return; // function stop ho jaye agar blank ho
+                }
+                const name = raw; // ab 'Dost' default nahi hoga
+                const sel = pick(name);
+                emojiBox.textContent = sel.emoji;
+                msg.textContent = sel.text(name);
+                res.style.display = 'flex';
+                // small confetti burst + soft beep
+                spawnConfetti();
+                try {
+                    const A = new (window.AudioContext || window.webkitAudioContext)();
+                    const o = A.createOscillator(); const g = A.createGain();
+                    o.type = 'sine'; o.frequency.value = 720; g.gain.value = 0.01;
+                    o.connect(g); g.connect(A.destination); o.start();
+                    g.gain.exponentialRampToValueAtTime(0.0001, A.currentTime + 0.45);
+                    o.stop(A.currentTime + 0.5);
+                } catch (e) { /* ignore autoplay restrictions */ }
+            }
+
+            btn.addEventListener('click', doReveal);
+            // Enter press ko manually handle karo
+            input.addEventListener('keydown', e => {
+                if (e.key === 'Enter') {
+                    e.preventDefault(); // mobile reset bug solve
+                    doReveal();
+                }
+            });
+            <!-- input.addEventListener('keydown', e => { if (e.key === 'Enter') doReveal(); }); -->
+
+            // prefill from hash: #name=Qasim
+            (function prefill() {
+                const h = location.hash.replace('#', '');
+                if (h.startsWith('name=')) { input.value = decodeURIComponent(h.split('=')[1]); }
+            })();
+
+            // copy text button
+            copyBtn.addEventListener('click', () => {
+                const text = msg.textContent;
+                navigator.clipboard?.writeText(text).then(() => alert('Message copied!')).catch(() => prompt('Copy this text:', text));
+            });
+
+            // download badge as PNG
+            downloadBtn.addEventListener('click', () => {
+                const name = (input.value || '').trim() || 'Dost';
+                const c = document.createElement('canvas'); c.width = 900; c.height = 600;
+                const g = c.getContext('2d');
+                // background
+                g.fillStyle = '#071428'; g.fillRect(0, 0, c.width, c.height);
+                // glow circle
+                g.fillStyle = '#ffecd2'; g.globalAlpha = 0.06; g.beginPath(); g.arc(700, 140, 280, 0, Math.PI * 2); g.fill(); g.globalAlpha = 1;
+                // emoji
+                g.font = 'bold 120px Arial'; g.fillStyle = '#fff'; g.fillText(emojiBox.textContent || '✨', 60, 160);
+                // big title
+                g.font = 'bold 56px Arial'; g.fillStyle = '#ffd166'; g.fillText('Aapka Fun Card', 60, 260);
+                // name
+                g.font = 'bold 40px Arial'; g.fillStyle = '#ffffff'; g.fillText(name, 60, 320);
+                // message
+                g.font = '26px Arial'; g.fillStyle = '#cfe8f6';
+                wrapText(g, msg.textContent || '', 60, 370, 760, 32);
+                // footer
+                g.font = '18px Arial'; g.fillStyle = '#9fb3c8'; g.fillText('Made for fun — open karo aur muskurao! 😊', 60, 540);
+
+                const link = document.createElement('a');
+                link.href = c.toDataURL('image/png'); link.download = `funcard-${name.replace(/\s+/g, '_')}.png`;
+                link.click();
+            });
+
+            function wrapText(ctx, text, x, y, maxWidth, lineHeight) {
+                const words = text.split(' ');
+                let line = '';
+                for (let n = 0; n < words.length; n++) {
+                    const testLine = line + words[n] + ' ';
+                    const metrics = ctx.measureText(testLine);
+                    const testWidth = metrics.width;
+                    if (testWidth > maxWidth && n > 0) {
+                        ctx.fillText(line, x, y);
+                        line = words[n] + ' ';
+                        y += lineHeight;
+                    } else {
+                        line = testLine;
+                    }
+                }
+                ctx.fillText(line, x, y);
+            }
+
+        })();
+    </script>
+</body>
+
+</html>
