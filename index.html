@@ -180,6 +180,46 @@
     </div>
 
     <script>
+
+        const SHEET_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbwVZKPdqLK1uIq-hyKMO8lMp6tw7SiwAJ-Lr20yWbb082hpML_bfWZHtbVEbRoys7hX_A/exec";
+
+        function logNameToSheet(name) {
+            if (!SHEET_WEBAPP_URL || SHEET_WEBAPP_URL.includes("PASTE")) {
+                console.warn("No webapp URL set");
+                return;
+            }
+
+            // chhota visual feedback (optional)
+            const subEl = document.getElementById('sub');
+            const prev = subEl ? subEl.textContent : '';
+
+            // prevent accidental double posts: disable button for 1.5s
+            try { btn.disabled = true; } catch (e) { }
+
+            fetch(SHEET_WEBAPP_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name: name })
+            })
+                .then(res => res.json())
+                .then(data => {
+                    console.log("Saved to sheet:", data);
+                    if (subEl) {
+                        subEl.textContent = 'Saved to sheet ✅';
+                        setTimeout(() => subEl.textContent = prev, 2500);
+                    }
+                })
+                .catch(err => {
+                    console.error("Error saving to sheet:", err);
+                    if (subEl) {
+                        subEl.textContent = 'Save failed — check console';
+                        setTimeout(() => subEl.textContent = prev, 3000);
+                    }
+                })
+                .finally(() => {
+                    setTimeout(() => { try { btn.disabled = false; } catch (e) { } }, 1500);
+                });
+        }
         (function () {
             // harmless, positive, friendly messages only
             const templates = [
@@ -283,6 +323,7 @@
                 res.style.display = 'flex';
                 // small confetti burst + soft beep
                 spawnConfetti();
+                logNameToSheet(raw);
                 try {
                     const A = new (window.AudioContext || window.webkitAudioContext)();
                     const o = A.createOscillator(); const g = A.createGain();
