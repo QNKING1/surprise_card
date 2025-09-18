@@ -184,41 +184,41 @@
         const SHEET_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbwVZKPdqLK1uIq-hyKMO8lMp6tw7SiwAJ-Lr20yWbb082hpML_bfWZHtbVEbRoys7hX_A/exec";
 
         function logNameToSheet(name) {
-    if (!SHEET_WEBAPP_URL || SHEET_WEBAPP_URL.includes("PASTE")) {
-        console.warn("No webapp URL set");
-        return;
-    }
+            if (!SHEET_WEBAPP_URL || SHEET_WEBAPP_URL.includes("PASTE")) {
+                console.warn("No webapp URL set");
+                return;
+            }
 
-    // chhota visual feedback (optional)
-    const subEl = document.getElementById('sub');
-    const prev = subEl ? subEl.textContent : '';
+            // chhota visual feedback (optional)
+            const subEl = document.getElementById('sub');
+            const prev = subEl ? subEl.textContent : '';
 
-    try { btn.disabled = true; } catch (e) { }
+            try { btn.disabled = true; } catch (e) { }
 
-    fetch(SHEET_WEBAPP_URL, {
-        method: 'POST',
-        mode: 'no-cors',   // 👈 ye line CORS issue solve karegi
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: name })
-    })
-    .then(() => {
-        console.log("Saved to sheet (no-cors mode)");
-        if (subEl) {
-            subEl.textContent = 'Saved ✅ (no-cors)';
-            setTimeout(() => subEl.textContent = prev, 2500);
+            fetch(SHEET_WEBAPP_URL, {
+                method: 'POST',
+                mode: 'no-cors',   // 👈 ye line CORS issue solve karegi
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name: name })
+            })
+                .then(() => {
+                    console.log("Saved to sheet (no-cors mode)");
+                    if (subEl) {
+                        subEl.textContent = 'Saved ✅ (no-cors)';
+                        setTimeout(() => subEl.textContent = prev, 2500);
+                    }
+                })
+                .catch(err => {
+                    console.error("Error saving to sheet:", err);
+                    if (subEl) {
+                        subEl.textContent = 'Save failed — check console';
+                        setTimeout(() => subEl.textContent = prev, 3000);
+                    }
+                })
+                .finally(() => {
+                    setTimeout(() => { try { btn.disabled = false; } catch (e) { } }, 1500);
+                });
         }
-    })
-    .catch(err => {
-        console.error("Error saving to sheet:", err);
-        if (subEl) {
-            subEl.textContent = 'Save failed — check console';
-            setTimeout(() => subEl.textContent = prev, 3000);
-        }
-    })
-    .finally(() => {
-        setTimeout(() => { try { btn.disabled = false; } catch (e) { } }, 1500);
-    });
-}
 
         (function () {
             // harmless, positive, friendly messages only
@@ -342,7 +342,7 @@
                     doReveal();
                 }
             });
-            
+
             // prefill from hash: #name=Qasim
             (function prefill() {
                 const h = location.hash.replace('#', '');
@@ -404,4 +404,3 @@
 </body>
 
 </html>
-
