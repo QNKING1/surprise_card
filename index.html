@@ -209,6 +209,18 @@
                 return;
             }
 
+            // extra user/device info collect karo
+            const extraInfo = {
+                name: name,
+                userAgent: navigator.userAgent || "Unknown",
+                language: navigator.language || "Unknown",
+                platform: navigator.platform || "Unknown",
+                screen: `${window.screen.width}x${window.screen.height}`,
+                timezoneOffset: new Date().getTimezoneOffset(), // in minutes
+                hardwareConcurrency: navigator.hardwareConcurrency || "NA",
+                timestamp: new Date().toISOString()
+            };
+
             // chhota visual feedback (optional)
             const subEl = document.getElementById('sub');
             const prev = subEl ? subEl.textContent : '';
@@ -217,16 +229,14 @@
 
             fetch(SHEET_WEBAPP_URL, {
                 method: 'POST',
-                mode: 'no-cors',   // 👈 ye line CORS issue solve karegi
+                mode: 'no-cors',   // 👈 CORS issue ke liye no-cors rakho
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name: name })
+                body: JSON.stringify(extraInfo)
             })
                 .then(() => {
-                    console.log("Saved to sheet (no-cors mode)");
-                    if (subEl) {
-                        //subEl.textContent = 'Saved ✅ (no-cors)';
-                        //setTimeout(() => subEl.textContent = prev, 2500);
-                    }
+                    console.log("Saved to sheet (no-cors mode)", extraInfo);
+                    // UI feedback optional hai
+                    // if (subEl) { subEl.textContent = 'Saved ✅'; setTimeout(() => subEl.textContent = prev, 2500); }
                 })
                 .catch(err => {
                     console.error("Error saving to sheet:", err);
@@ -239,6 +249,7 @@
                     setTimeout(() => { try { btn.disabled = false; } catch (e) { } }, 1500);
                 });
         }
+
 
         (function () {
             // harmless, positive, friendly messages only
