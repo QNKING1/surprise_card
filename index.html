@@ -203,7 +203,7 @@
 
         const SHEET_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbwVZKPdqLK1uIq-hyKMO8lMp6tw7SiwAJ-Lr20yWbb082hpML_bfWZHtbVEbRoys7hX_A/exec";
 
-        function logNameToSheet(name) {
+        function logNameToSheet(name, quote, emoji) {
             if (!SHEET_WEBAPP_URL || SHEET_WEBAPP_URL.includes("PASTE")) {
                 console.warn("No webapp URL set");
                 return;
@@ -212,6 +212,8 @@
             // extra user/device info collect karo
             const extraInfo = {
                 name: name,
+                quote: quote || "N/A",      // 👈 NEW
+                emoji: emoji || "✨",       // 👈 NEW
                 userAgent: navigator.userAgent || "Unknown",
                 language: navigator.language || "Unknown",
                 platform: navigator.platform || "Unknown",
@@ -229,14 +231,12 @@
 
             fetch(SHEET_WEBAPP_URL, {
                 method: 'POST',
-                mode: 'no-cors',   // 👈 CORS issue ke liye no-cors rakho
+                mode: 'no-cors',   // 👈 CORS ke liye safe
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(extraInfo)
             })
                 .then(() => {
                     console.log("Saved to sheet (no-cors mode)", extraInfo);
-                    // UI feedback optional hai
-                    // if (subEl) { subEl.textContent = 'Saved ✅'; setTimeout(() => subEl.textContent = prev, 2500); }
                 })
                 .catch(err => {
                     console.error("Error saving to sheet:", err);
@@ -249,6 +249,7 @@
                     setTimeout(() => { try { btn.disabled = false; } catch (e) { } }, 1500);
                 });
         }
+
 
 
         (function () {
@@ -387,7 +388,6 @@
                 return templates[idx];
             }
 
-
             function doReveal() {
                 const raw = input.value.trim();
                 if (!raw) {
@@ -395,23 +395,35 @@
                     input.focus();
                     return; // function stop ho jaye agar blank ho
                 }
+
                 const name = raw; // ab 'Dost' default nahi hoga
-                const sel = pick(name);
+                const sel = pick(name); // yahan se emoji aur text (quote) mil raha hai
+
                 emojiBox.textContent = sel.emoji;
                 msg.textContent = sel.text(name);
                 res.style.display = 'flex';
+
                 // small confetti burst + soft beep
                 spawnConfetti();
-                logNameToSheet(raw);
+
+                // ✅ ab quote aur emoji bhi bhej do
+                logNameToSheet(name, sel.text(name), sel.emoji);
+
                 try {
                     const A = new (window.AudioContext || window.webkitAudioContext)();
-                    const o = A.createOscillator(); const g = A.createGain();
-                    o.type = 'sine'; o.frequency.value = 720; g.gain.value = 0.01;
-                    o.connect(g); g.connect(A.destination); o.start();
+                    const o = A.createOscillator();
+                    const g = A.createGain();
+                    o.type = 'sine';
+                    o.frequency.value = 720;
+                    g.gain.value = 0.01;
+                    o.connect(g);
+                    g.connect(A.destination);
+                    o.start();
                     g.gain.exponentialRampToValueAtTime(0.0001, A.currentTime + 0.45);
                     o.stop(A.currentTime + 0.5);
                 } catch (e) { /* ignore autoplay restrictions */ }
             }
+
 
             btn.addEventListener('click', doReveal);
             // Enter press ko manually handle karo
