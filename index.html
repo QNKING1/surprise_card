@@ -286,6 +286,37 @@
                 { emoji: '🌟', text: (n) => `${n}, Allah tumhari mehnat ko kamiyabi mein badal de.` }
             ];
 
+            const developerQuotes = [
+                { emoji: '⚡', text: (n) => `${n}, tum sirf code nahi likhte… tum logon ke dilon me apna naam compile karte ho.` },
+                { emoji: '💡', text: (n) => `${n}, bug aur error sabko milte hain, lekin tum har dafa solution dhoond lete ho.` },
+                { emoji: '🌸', text: (n) => `${n}, tumhari dosti bhi clean aur optimized hai — bina comments ke samajh aa jati hai.` },
+                { emoji: '🔥', text: (n) => `${n}, zindagi ek repo hai, aur tum wo commit ho jo permanent ho gaya.` },
+                { emoji: '💫', text: (n) => `${n}, har insaan ek variable hai, lekin tum constant ban kar stability laate ho.` },
+                { emoji: '🖤', text: (n) => `${n}, tumhari soch ek algorithm hai jo hamesha positivity return karti hai.` },
+                { emoji: '🌍', text: (n) => `${n}, duniya ke liye tum ek developer ho, lekin apno ke liye ek complete framework.` },
+                { emoji: '🤝', text: (n) => `${n}, jo banda apna waqt code aur doston par invest kare, uska naam Qasim hota hai.` },
+                { emoji: '✨', text: (n) => `${n}, errors aate rahte hain, lekin tumhari life ka console hamesha ‘Success’ print karta hai.` },
+                { emoji: '👑', text: (n) => `${n}, tum sirf developer nahi… ek inspiration ho.` }
+            ];
+
+
+            // special templates (sirf full names ke liye)
+            const specials = {
+                "abdul ghaffar pirzado": {
+                    emoji: "💎",
+                    text: (n) => `${n}, Zindagi me bohot log aaye aur chale gaye, lekin tu wo hai jo dil me bas gaya. 🫂`
+                },
+                "muhammad qasim nahiyoon": {
+                    emoji: "💎",
+                    text: (n) => `${n}, Zindagi me bohot log aaye aur chale gaye, lekin tu wo hai jo dil me bas gaya. 🫂`
+                },
+                "naveed ali tunio": {
+                    emoji: "🥰",
+                    text: (n) => `${n}, u na hota to shayad zindagi me muskaan itni gehri kabhi na hot, mere dost `
+                }
+                // aur bhi dost add karne hain to isi tarah add karo
+            };
+
 
             const cvs = document.getElementById('confetti');
             const ctx = cvs.getContext && cvs.getContext('2d');
@@ -331,14 +362,31 @@
             const downloadBtn = document.getElementById('downloadBtn');
             const copyBtn = document.getElementById('copyBtn');
 
+            // pick function update
             function pick(name) {
-                // simple deterministic pick based on name, so same name gets same card (nice touch)
+                const lower = (name || "").toLowerCase().trim();
+
+                // 👇 agar Qasim hai to developerQuotes me se random ek do
+                if (lower === "muhammad qasim nahiyoon") {
+                    return developerQuotes[Math.floor(Math.random() * developerQuotes.length)];
+                }
+
+                // 👇 agar specials object me match hai
+                if (specials[lower]) {
+                    return specials[lower];
+                }
+
+                // 👇 normal deterministic pick
                 const s = (name || 'Friend');
                 let h = 0;
-                for (let i = 0; i < s.length; i++) { h = ((h << 5) - h) + s.charCodeAt(i); h |= 0; }
+                for (let i = 0; i < s.length; i++) {
+                    h = ((h << 5) - h) + s.charCodeAt(i);
+                    h |= 0;
+                }
                 const idx = Math.abs(h) % templates.length;
                 return templates[idx];
             }
+
 
             function doReveal() {
                 const raw = input.value.trim();
